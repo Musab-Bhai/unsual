@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PGC Python Tutor 4.2 - Image Explanation</title>
+  <title>PGC Python Tutor 4.2</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -701,6 +701,39 @@
       margin-right: 8px;
     }
     
+    /* Image analysis section */
+    .image-analysis {
+      background: linear-gradient(135deg, #f0f9ff, #e6f4ff);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid #bae6fd;
+      box-shadow: 0 4px 15px rgba(37,99,235,0.1);
+    }
+    
+    .image-analysis-title {
+      font-weight: 700;
+      color: #1D4ED8;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      font-size: 1.2rem;
+    }
+    
+    .image-analysis-title::before {
+      content: "🔍";
+      margin-right: 10px;
+      font-size: 1.5rem;
+    }
+    
+    .image-analysis-content {
+      margin-top: 15px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid #3B82F6;
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 767px) {
       .header {
@@ -754,6 +787,10 @@
       .upload-label {
         font-size: 0.8rem;
         padding: 6px 10px;
+      }
+      
+      .image-analysis {
+        padding: 15px;
       }
     }
   </style>
@@ -890,12 +927,7 @@ ICS first year ke beginner students ko **Roman Urdu** mein simple aur clear tare
 
 3. Har waqt **Roman Urdu** mein jawaab do. Hindi-style lafz mat use karo.
 
-💬 Jab koi user Python ka concept poochay (e.g. “Variable kya hota hai?”), to sab se pehle ye pucho:
-
-**"Kya aapko is concept ki short explanation chahiye ya detailed?"**  
-**"Agar aap beginner hain to detailed samajhna behtar rahega — thoda time lagega lekin aapka faida zyada hoga."**
-
-Uske baad uski preference ke mutabiq headings aur examples ka use karo.
+💬 Jab koi user Python ka concept poochay (e.g. “Variable kya hota hai?”), to detailed explanation do. Agar user ne specify kiya ho ke wo short explanation chahta hai to short explanation do.
 
 📚 Jab user concept poochay, to upar diye gaye headings me se sirf wohi lagao jo zaroori ho. Har baar poori list na do.
 
@@ -1300,100 +1332,79 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
         return;
       }
       
-      // Show uploading status
-      const uploadStatus = document.createElement('div');
-      uploadStatus.className = 'upload-status';
-      uploadStatus.innerHTML = `
-        <span class="material-icons">cloud_upload</span> 
-        Image upload ho rahi hai...
-        <div class="ocr-progress-bar">
-          <div class="ocr-progress" id="uploadProgress"></div>
+      // Create preview container
+      const previewContainer = document.createElement('div');
+      previewContainer.className = 'image-preview-container';
+      previewContainer.innerHTML = `
+        <img src="${URL.createObjectURL(file)}" class="image-preview" alt="Uploaded image">
+        <div class="remove-image-btn">
+          <span class="material-icons text-red-500">close</span>
         </div>
       `;
-      chatContainer.appendChild(uploadStatus);
+      
+      // Add preview to chat
+      const userBubble = addMessage("Maine ek image upload ki hai", "user");
+      userBubble.appendChild(previewContainer);
+      
+      // Show the preview
+      previewContainer.style.display = 'block';
+      
+      // Add event listener for remove button
+      previewContainer.querySelector('.remove-image-btn').addEventListener('click', function() {
+        previewContainer.remove();
+      });
+      
+      // Show image analysis status
+      const analysisStatus = document.createElement('div');
+      analysisStatus.className = 'ocr-status';
+      analysisStatus.innerHTML = `
+        <span class="material-icons">image_search</span> 
+        Image ka analysis shuru ho raha hai...
+        <div class="ocr-progress-bar">
+          <div class="ocr-progress" id="analysisProgress"></div>
+        </div>
+      `;
+      chatContainer.appendChild(analysisStatus);
       scrollToBottomIfNeeded();
       
-      // Simulate upload progress
-      const uploadProgress = uploadStatus.querySelector('.ocr-progress');
+      // Simulate analysis with progress bar
+      const progressBar = document.getElementById('analysisProgress');
       let progress = 0;
-      const uploadInterval = setInterval(() => {
-        progress += 10;
-        uploadProgress.style.width = `${progress}%`;
+      const progressInterval = setInterval(() => {
+        progress += 5;
+        progressBar.style.width = `${progress}%`;
         
         if (progress >= 100) {
-          clearInterval(uploadInterval);
-          uploadStatus.remove();
+          clearInterval(progressInterval);
+          analysisStatus.innerHTML = '<span class="material-icons">check_circle</span> Image ka analysis ho gaya!';
           
-          // Create preview container
-          const previewContainer = document.createElement('div');
-          previewContainer.className = 'image-preview-container';
-          previewContainer.innerHTML = `
-            <img src="${URL.createObjectURL(file)}" class="image-preview" alt="Uploaded image">
-            <div class="remove-image-btn">
-              <span class="material-icons text-red-500">close</span>
-            </div>
-          `;
-          
-          // Add preview to chat
-          const userBubble = addMessage("Maine ek image upload ki hai", "user");
-          userBubble.appendChild(previewContainer);
-          
-          // Show the preview
-          previewContainer.style.display = 'block';
-          
-          // Add event listener for remove button
-          previewContainer.querySelector('.remove-image-btn').addEventListener('click', function() {
-            previewContainer.remove();
-          });
-          
-          // Show OCR processing status
-          const ocrStatus = document.createElement('div');
-          ocrStatus.className = 'ocr-status';
-          ocrStatus.innerHTML = `
-            <span class="material-icons">image_search</span> 
-            Image ko samajh raha hoon...
-            <div class="ocr-progress-bar">
-              <div class="ocr-progress" id="ocrProgress"></div>
-            </div>
-          `;
-          chatContainer.appendChild(ocrStatus);
-          scrollToBottomIfNeeded();
-          
-          // Simulate OCR processing with progress bar
-          const progressBar = document.getElementById('ocrProgress');
-          let progress = 0;
-          const progressInterval = setInterval(() => {
-            progress += 5;
-            progressBar.style.width = `${progress}%`;
-            
-            if (progress >= 100) {
-              clearInterval(progressInterval);
-              ocrStatus.innerHTML = '<span class="material-icons">check_circle</span> Image ko samajh liya!';
-              
-              // After processing, get AI explanation
-              setTimeout(() => {
-                explainImage();
-              }, 1000);
-            }
-          }, 200);
+          // After processing, get AI explanation
+          setTimeout(() => {
+            analyzeImage(file);
+          }, 1000);
         }
       }, 200);
     });
     
-    // Function to explain uploaded image
-    async function explainImage() {
+    // Function to analyze uploaded image
+    async function analyzeImage(file) {
       const typingIndicator = showTypingIndicator();
       
       try {
         // Create a prompt for the AI
-        const prompt = `Student ne ek image upload ki hai. Image mein jo kuch bhi hai woh computer science se related hai. Kripya image ko dekh kar concept ko Roman Urdu mein step-by-step explain karein. Agar image mein code ho to uski bhi explanation dein. Agar image clear na ho to politely clear image mangain.`;
+        const prompt = `Student ne ek image upload ki hai. Image mein computer science ka concept ya Python code hai. Kripya image ka analysis karke Roman Urdu mein step-by-step explain karein.`;
         
         // Get AI response
         const botReply = await getAIResponse(prompt);
         typingIndicator.remove();
         
         // Add the explanation with a special format
-        const explanationMessage = `📷 **Image Explanation**\n\n${botReply}`;
+        const explanationMessage = `
+<div class="image-analysis">
+  <div class="image-analysis-title">Image Analysis Report</div>
+  <div class="image-analysis-content">${botReply}</div>
+</div>
+`;
         addMessageWithTyping(explanationMessage, "bot");
         
         // If voice call is active, speak the response
@@ -1401,11 +1412,11 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
           speakMessage(botReply);
         }
       } catch (error) {
-        console.error("Error explaining image:", error);
+        console.error("Error analyzing image:", error);
         typingIndicator.remove();
         
         if (error.name !== 'AbortError') {
-          addMessage("Image ko explain karne mein masla hua. Phir se koshish karein.", "bot");
+          addMessage("Image ka analysis karne mein masla hua. Phir se koshish karein.", "bot");
         }
       } finally {
         currentAbortController = null;
