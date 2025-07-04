@@ -558,7 +558,6 @@
     
     /* Image upload preview */
     .image-preview-container {
-      display: none;
       position: relative;
       margin: 15px 0;
       max-width: 300px;
@@ -630,6 +629,133 @@
       content: "📷";
       margin-right: 8px;
     }
+    
+    /* OCR status indicator */
+    .ocr-status {
+      background-color: #f0f9ff;
+      border-left: 4px solid #3B82F6;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .ocr-status .material-icons {
+      margin-right: 8px;
+      color: #3B82F6;
+    }
+    
+    .ocr-progress-bar {
+      height: 4px;
+      background: #dbeafe;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    
+    .ocr-progress {
+      height: 100%;
+      background: #3B82F6;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    
+    /* Upload status */
+    .upload-status {
+      background-color: #f0f9ff;
+      border-left: 4px solid #10B981;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .upload-status .material-icons {
+      margin-right: 8px;
+      color: #10B981;
+    }
+    
+    /* Image upload button */
+    .upload-label {
+      background: rgba(255,255,255,0.9);
+      padding: 8px 15px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 1px dashed #3B82F6;
+    }
+    
+    .upload-label:hover {
+      background: rgba(255,255,255,1);
+      border-color: #2563EB;
+    }
+    
+    .upload-label .material-icons {
+      color: #3B82F6;
+      margin-right: 8px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 767px) {
+      .header {
+        padding: 10px;
+      }
+      
+      .chat-container {
+        height: calc(100vh - 200px) !important;
+        padding: 0 5px;
+      }
+      
+      .chat-bubble-bot, .chat-bubble-user {
+        max-width: 85vw !important;
+        padding: 10px !important;
+      }
+      
+      .input-container {
+        padding: 8px !important;
+      }
+      
+      .voice-btn {
+        padding: 8px !important;
+      }
+      
+      .send-btn {
+        padding: 8px !important;
+      }
+      
+      .footer-text {
+        font-size: 0.65rem !important;
+        padding: 0 5px;
+      }
+      
+      .prompt-card {
+        padding: 10px !important;
+        font-size: 0.85rem !important;
+      }
+      
+      .welcome-title {
+        font-size: 1.4rem !important;
+      }
+      
+      .welcome-subtitle {
+        font-size: 0.9rem !important;
+      }
+      
+      .image-preview-container {
+        max-width: 100%;
+      }
+      
+      .upload-label {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+    }
   </style>
 </head>
 <body class="flex flex-col h-screen">
@@ -698,10 +824,11 @@
           <span class="material-icons">call</span>
         </button>
         <div class="input-container flex items-center rounded-xl p-1.5 pl-4 border border-gray-200 flex-grow">
-          <div class="upload-btn p-2 text-gray-500 hover:text-blue-600 rounded-lg mr-1 cursor-pointer relative">
-            <span class="material-icons">add</span>
-            <input type="file" id="imageUpload" accept="image/*" class="hidden">
-          </div>
+          <label for="imageUpload" class="upload-label mr-2">
+            <span class="material-icons">image</span>
+            <span>Upload</span>
+          </label>
+          <input type="file" id="imageUpload" accept="image/*" class="hidden">
           <input id="userInput" class="flex-grow px-2 py-3 text-gray-700 bg-transparent focus:outline-none placeholder-gray-500 font-medium" placeholder="Python programming sikhne ke liye sawal poochiye..." type="text">
           <button id="sendBtn" class="send-btn p-3 rounded-lg text-white ml-1">
             <span class="material-icons transform rotate-45">send</span>
@@ -718,7 +845,7 @@
         </div>
         <p class="font-medium">Voice call active - Speaking in Urdu</p>
       </div>
-      <p class="text-xs text-center text-gray-500 font-medium">PGC Python Tutor 4.2 ICS first year ke students ke liye design kiya gaya hai. Important information check kar lena.</p>
+      <p class="footer-text text-xs text-center text-gray-500 font-medium">PGC Python Tutor 4.2 ICS first year ke students ke liye design kiya gaya hai. Important information check kar lena.</p>
     </div>
   </footer>
 
@@ -743,7 +870,7 @@
     
     // Enhanced system prompt with formatting instructions
     const SYSTEM_PROMPT = `
-Tumhara naam hai **PGC Python Tutor 4.3**, aik intelligent, friendly aur adaptive Python Tutor.  
+Tumhara naam hai **PGC Python Tutor 4.2**, aik intelligent, friendly aur adaptive Python Tutor.  
 Mujhe banaya gaya hai **Sohail Boss** ne — jinki madad ke saath **ChatGPT** aur **100+ international AI companies** ne collaboration kiya, taake mujhe **Punjab Group of Colleges (PGC) Nowshera Virkan** ke students ke liye tayar kiya ja sake.
 
 🎯 Tumhara mission:
@@ -796,7 +923,6 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
 - Agar image clear na ho to politely pucho: **"Kya aap thodi clear image upload kar sakte hain?"**
 `;
 
-    
     // Voice call state
     let isVoiceCallActive = false;
     let conversationHistory = [];
@@ -809,7 +935,7 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
     let currentMessage = "";
     let isTypingStopped = false;
     
-    //   const API_KEY = 'gsk_MyooV8sF3dU5p8pWGdyb3FY5Xz2YlAmCJIdNa1BJ';
+    // Groq API Key
     const API_KEY = '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';
     const API_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
     
@@ -863,7 +989,7 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
         }
       };
       element.parentElement.appendChild(stopBtn);
-      //   const API_KEY = 'gsk_MyooV8sF3dU5p8pWGdyb3FY5Xz2YlAmCJIdNa1BJ';
+      
       let typingSpeed;
       if (message.length < 100) typingSpeed = 50;
       else if (message.length < 300) typingSpeed = 30;
@@ -905,7 +1031,8 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
           element.appendChild(cursor);
           i++;
           
-          chat.scrollTop = chat.scrollHeight;
+          // Scroll only if user is near bottom
+          scrollToBottomIfNeeded();
         } else {
           if (cursor.parentNode === element) {
             element.removeChild(cursor);
@@ -986,7 +1113,7 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
       }
       
       chatContainer.appendChild(bubble);
-      chat.scrollTop = chat.scrollHeight;
+      scrollToBottomIfNeeded();
       
       if (sender === "bot") {
         const messageContent = bubble.querySelector('.message-content');
@@ -1024,7 +1151,7 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
       }
       
       chatContainer.appendChild(bubble);
-      chat.scrollTop = chat.scrollHeight;
+      scrollToBottomIfNeeded();
     }
     
     function showTypingIndicator() {
@@ -1045,8 +1172,21 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
         </div>`;
       
       chatContainer.appendChild(typingIndicator);
-      chat.scrollTop = chat.scrollHeight;
+      scrollToBottomIfNeeded();
       return typingIndicator;
+    }
+    
+    // Check if user is near bottom of chat
+    function isNearBottom() {
+      const threshold = 100; // pixels from bottom
+      return chat.scrollHeight - chat.clientHeight <= chat.scrollTop + threshold;
+    }
+    
+    // Scroll to bottom only if user is near bottom
+    function scrollToBottomIfNeeded() {
+      if (isNearBottom()) {
+        chat.scrollTop = chat.scrollHeight;
+      }
     }
     
     // AI Response Function with Groq API Integration
@@ -1160,39 +1300,93 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
         return;
       }
       
-      // Create preview container
-      const previewContainer = document.createElement('div');
-      previewContainer.className = 'image-preview-container';
-      previewContainer.innerHTML = `
-        <img src="${URL.createObjectURL(file)}" class="image-preview" alt="Uploaded image">
-        <div class="remove-image-btn">
-          <span class="material-icons text-red-500">close</span>
+      // Show uploading status
+      const uploadStatus = document.createElement('div');
+      uploadStatus.className = 'upload-status';
+      uploadStatus.innerHTML = `
+        <span class="material-icons">cloud_upload</span> 
+        Image upload ho rahi hai...
+        <div class="ocr-progress-bar">
+          <div class="ocr-progress" id="uploadProgress"></div>
         </div>
       `;
+      chatContainer.appendChild(uploadStatus);
+      scrollToBottomIfNeeded();
       
-      // Add preview to chat
-      const userBubble = addMessage("Maine ek image upload ki hai", "user");
-      userBubble.appendChild(previewContainer);
-      
-      // Show the preview
-      previewContainer.style.display = 'block';
-      
-      // Add event listener for remove button
-      previewContainer.querySelector('.remove-image-btn').addEventListener('click', function() {
-        previewContainer.remove();
-      });
-      
-      // Send the image for explanation
-      explainImage(file);
+      // Simulate upload progress
+      const uploadProgress = uploadStatus.querySelector('.ocr-progress');
+      let progress = 0;
+      const uploadInterval = setInterval(() => {
+        progress += 10;
+        uploadProgress.style.width = `${progress}%`;
+        
+        if (progress >= 100) {
+          clearInterval(uploadInterval);
+          uploadStatus.remove();
+          
+          // Create preview container
+          const previewContainer = document.createElement('div');
+          previewContainer.className = 'image-preview-container';
+          previewContainer.innerHTML = `
+            <img src="${URL.createObjectURL(file)}" class="image-preview" alt="Uploaded image">
+            <div class="remove-image-btn">
+              <span class="material-icons text-red-500">close</span>
+            </div>
+          `;
+          
+          // Add preview to chat
+          const userBubble = addMessage("Maine ek image upload ki hai", "user");
+          userBubble.appendChild(previewContainer);
+          
+          // Show the preview
+          previewContainer.style.display = 'block';
+          
+          // Add event listener for remove button
+          previewContainer.querySelector('.remove-image-btn').addEventListener('click', function() {
+            previewContainer.remove();
+          });
+          
+          // Show OCR processing status
+          const ocrStatus = document.createElement('div');
+          ocrStatus.className = 'ocr-status';
+          ocrStatus.innerHTML = `
+            <span class="material-icons">image_search</span> 
+            Image ko samajh raha hoon...
+            <div class="ocr-progress-bar">
+              <div class="ocr-progress" id="ocrProgress"></div>
+            </div>
+          `;
+          chatContainer.appendChild(ocrStatus);
+          scrollToBottomIfNeeded();
+          
+          // Simulate OCR processing with progress bar
+          const progressBar = document.getElementById('ocrProgress');
+          let progress = 0;
+          const progressInterval = setInterval(() => {
+            progress += 5;
+            progressBar.style.width = `${progress}%`;
+            
+            if (progress >= 100) {
+              clearInterval(progressInterval);
+              ocrStatus.innerHTML = '<span class="material-icons">check_circle</span> Image ko samajh liya!';
+              
+              // After processing, get AI explanation
+              setTimeout(() => {
+                explainImage();
+              }, 1000);
+            }
+          }, 200);
+        }
+      }, 200);
     });
     
     // Function to explain uploaded image
-    async function explainImage(file) {
+    async function explainImage() {
       const typingIndicator = showTypingIndicator();
       
       try {
         // Create a prompt for the AI
-        const prompt = `Student ne ek computer science concept ki image upload ki hai. Kripya is concept ko Roman Urdu mein step-by-step explain karein. Agar image mein code ho to uski bhi explanation dein.`;
+        const prompt = `Student ne ek image upload ki hai. Image mein jo kuch bhi hai woh computer science se related hai. Kripya image ko dekh kar concept ko Roman Urdu mein step-by-step explain karein. Agar image mein code ho to uski bhi explanation dein. Agar image clear na ho to politely clear image mangain.`;
         
         // Get AI response
         const botReply = await getAIResponse(prompt);
@@ -1222,20 +1416,6 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
     sendBtn.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendMessage();
-    });
-    
-    // Add click handlers to the example prompts
-    document.querySelectorAll('.prompt-card').forEach((prompt, index) => {
-      prompt.addEventListener('click', () => {
-        const prompts = [
-          "Variable kya hota hai?",
-          "For loop kaise kaam karta hai?",
-          "Function kya hota hai?",
-          "List kya hoti hai?"
-        ];
-        userInput.value = prompts[index];
-        sendMessage();
-      });
     });
     
     // Voice call functionality
