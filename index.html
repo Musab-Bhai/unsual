@@ -812,6 +812,22 @@
       -webkit-text-fill-color: transparent;
     }
     
+    /* INPUT BAR OPTIMIZATION */
+    .input-container {
+      padding: 6px 8px !important;
+      flex-grow: 1;
+    }
+    
+    #userInput {
+      padding: 8px 4px;
+      font-size: 0.95rem;
+    }
+    
+    .voice-btn, .send-btn {
+      padding: 9px !important;
+      min-width: 40px;
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 767px) {
       .header {
@@ -829,20 +845,35 @@
       }
       
       .input-container {
-        padding: 8px !important;
+        padding: 4px 6px !important;
       }
       
+      #userInput {
+        font-size: 0.85rem;
+        padding: 6px 2px;
+      }
+    
+      .voice-btn, .send-btn {
+        padding: 7px !important;
+        min-width: 36px;
+      }
+    
+      .voice-btn .material-icons,
+      .send-btn .material-icons {
+        font-size: 18px !important;
+      }
+    
       .voice-btn {
-        padding: 8px !important;
+        margin-right: 8px !important;
       }
       
-      .send-btn {
-        padding: 8px !important;
+      .input-container {
+        min-width: 0;
       }
       
       .footer-text {
-        font-size: 0.65rem !important;
-        padding: 0 5px;
+        font-size: 0.6rem !important;
+        padding: 0 2px;
       }
       
       .prompt-card {
@@ -865,6 +896,12 @@
       .call-control-btn {
         width: 60px;
         height: 60px;
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .input-container {
+        max-width: 800px;
       }
     }
   </style>
