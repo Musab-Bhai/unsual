@@ -914,6 +914,23 @@
         max-width: 800px;
       }
     }
+    
+    /* Added new style for the CORS proxy status */
+    .cors-status {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: #3B82F6;
+      color: white;
+    }
   </style>
 </head>
 <body class="flex flex-col h-screen">
@@ -936,6 +953,12 @@
   <div id="apiStatus" class="api-status" style="display: none;">
     <span class="api-status-indicator"></span>
     <span>AI Assistant Ready</span>
+  </div>
+  
+  <!-- CORS Proxy Status Indicator -->
+  <div id="corsStatus" class="cors-status" style="display: none;">
+    <span class="api-status-indicator"></span>
+    <span>Voice Service Active</span>
   </div>
 
   <!-- Microphone Permission Modal -->
@@ -1020,14 +1043,7 @@
         </div>
       </div>
     </div>
-    <div class="ml-auto flex space-x-2">
-      <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
-        <span class="material-icons">history</span>
-      </button>
-      <button class="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
-        <span class="material-icons">settings</span>
-      </button>
-    </div>
+    <!-- History and settings icons removed as requested -->
   </header>
   
   <!-- Chat Area -->
@@ -1074,6 +1090,7 @@
     const voiceCallBtn = document.getElementById('voiceCallBtn');
     const voiceCallStatus = document.getElementById('voiceCallStatus');
     const apiStatus = document.getElementById('apiStatus');
+    const corsStatus = document.getElementById('corsStatus');
     const nameModal = document.getElementById('nameModal');
     const userNameInput = document.getElementById('userNameInput');
     const startChatBtn = document.getElementById('startChatBtn');
@@ -1148,7 +1165,6 @@ Tum ab voice call mode mein ho. Is mode mein:
 6. Tumhein Sohail Boss ne PGC students ke liye banaya hai, is liye tumhara maqsad sirf taleem mein madad dena hai
 `;
 
-
     // Voice call state
     let isVoiceCallActive = false;
     let callStartTime = null;
@@ -1171,7 +1187,9 @@ Tum ab voice call mode mein ho. Is mode mein:
     const API_KEY = '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';
     const API_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
     
-    // Google TTS API (using a proxy to avoid CORS issues)
+    // FIXED: Using a CORS proxy to solve the GitHub hosting issue
+    // Google TTS API with CORS proxy
+    const GOOGLE_TTS_PROXY = 'https://corsproxy.io/?';
     const GOOGLE_TTS_API = 'https://translate.google.com/translate_tts';
     
     // Track speaking state
@@ -1401,16 +1419,23 @@ Tum ab voice call mode mein ho. Is mode mein:
       // Encode text for URL
       const encodedText = encodeURIComponent(correctedText);
       
-      // Create Google TTS URL for Urdu
+      // FIXED: Using CORS proxy to solve GitHub hosting issue
       const ttsUrl = `${GOOGLE_TTS_API}?ie=UTF-8&q=${encodedText}&tl=ur&client=tw-ob`;
+      const proxyUrl = `${GOOGLE_TTS_PROXY}${encodeURIComponent(ttsUrl)}`;
+      
+      // Show CORS status
+      corsStatus.innerHTML = '<span class="api-status-indicator"></span> <span>Using CORS Proxy</span>';
+      corsStatus.style.display = 'flex';
       
       // Set audio source
-      audio.src = ttsUrl;
+      audio.src = proxyUrl;
       
       // Play audio
       audio.play()
         .then(() => {
-          console.log('Playing Urdu audio');
+          console.log('Playing Urdu audio via CORS proxy');
+          corsStatus.innerHTML = '<span class="api-status-indicator"></span> <span>Voice Service Active</span>';
+          
           // When audio finishes, set status back to listening
           audio.onended = () => {
             isSpeaking = false;
@@ -1427,6 +1452,8 @@ Tum ab voice call mode mein ho. Is mode mein:
         .catch(err => {
           console.error('Error playing audio:', err);
           callScreenStatus.textContent = 'Error playing audio';
+          corsStatus.innerHTML = '<span class="api-status-indicator"></span> <span>Voice Error</span>';
+          corsStatus.style.background = '#EF4444';
           isSpeaking = false;
         });
     }
