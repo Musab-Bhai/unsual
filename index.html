@@ -914,23 +914,6 @@
         max-width: 800px;
       }
     }
-    
-    /* Added new style for the CORS proxy status */
-    .cors-status {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      padding: 8px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      background: #3B82F6;
-      color: white;
-    }
   </style>
 </head>
 <body class="flex flex-col h-screen">
@@ -953,12 +936,6 @@
   <div id="apiStatus" class="api-status" style="display: none;">
     <span class="api-status-indicator"></span>
     <span>AI Assistant Ready</span>
-  </div>
-  
-  <!-- CORS Proxy Status Indicator -->
-  <div id="corsStatus" class="cors-status" style="display: none;">
-    <span class="api-status-indicator"></span>
-    <span>Voice Service Active</span>
   </div>
 
   <!-- Microphone Permission Modal -->
@@ -1090,7 +1067,6 @@
     const voiceCallBtn = document.getElementById('voiceCallBtn');
     const voiceCallStatus = document.getElementById('voiceCallStatus');
     const apiStatus = document.getElementById('apiStatus');
-    const corsStatus = document.getElementById('corsStatus');
     const nameModal = document.getElementById('nameModal');
     const userNameInput = document.getElementById('userNameInput');
     const startChatBtn = document.getElementById('startChatBtn');
@@ -1158,11 +1134,15 @@ Kya aapko kisi lafz ka matlab mushkil laga? Mujhe bataiye — main aur simple ka
 Tum ab voice call mode mein ho. Is mode mein:
 1. Har jawab 1-2 lines se zyada na ho
 2. Har baat Urdu script (یعنی اردو حروف) mein likhi jaye
-3. Har jawab mein izzat aur adab ka lehja ho
-4. Agar koi naamunasib baat ho to jawab dena:
+3. Har jawab mein izzat aur adab ka lehja ho, lekin thoda friendly aur casual ho
+4. Agar user casual baat kare (jaise "Aap kaise ho?") to jawab dena: 
+   "Main theek hoon, shukriya! Aap sunaien, Python ke baray mein kya seekhna chahenge?"
+5. Agar koi off-topic baat ho to politely guide karo:
+   "Main zyada tar programming ke baray mein baat karta hoon. Agar aap ka Python ka sawal ho to zaroor poochhiye."
+6. Agar koi naamunasib baat ho to jawab dena:
    "Main sirf Python programming par madad kar sakta hoon. Agar aap ko Python ka koi sawaal hai to poochhiye."
-5. Har user ka sawaal samajh kar seedha, simple aur saaf jawab do
-6. Tumhein Sohail Boss ne PGC students ke liye banaya hai, is liye tumhara maqsad sirf taleem mein madad dena hai
+7. Har user ka sawaal samajh kar seedha, simple aur saaf jawab do
+8. Tumhein Sohail Boss ne PGC students ke liye banaya hai, is liye tumhara maqsad sirf taleem mein madad dena hai
 `;
 
     // Voice call state
@@ -1402,6 +1382,11 @@ Tum ab voice call mode mein ho. Is mode mein:
       isSpeaking = true;
       callScreenStatus.textContent = 'Speaking...';
       
+      // Stop recognition while speaking
+      if (recognition) {
+        recognition.stop();
+      }
+      
       // Create audio element
       const audio = new Audio();
       
@@ -1423,10 +1408,6 @@ Tum ab voice call mode mein ho. Is mode mein:
       const ttsUrl = `${GOOGLE_TTS_API}?ie=UTF-8&q=${encodedText}&tl=ur&client=tw-ob`;
       const proxyUrl = `${GOOGLE_TTS_PROXY}${encodeURIComponent(ttsUrl)}`;
       
-      // Show CORS status
-      corsStatus.innerHTML = '<span class="api-status-indicator"></span> <span>Using CORS Proxy</span>';
-      corsStatus.style.display = 'flex';
-      
       // Set audio source
       audio.src = proxyUrl;
       
@@ -1434,7 +1415,6 @@ Tum ab voice call mode mein ho. Is mode mein:
       audio.play()
         .then(() => {
           console.log('Playing Urdu audio via CORS proxy');
-          corsStatus.innerHTML = '<span class="api-status-indicator"></span> <span>Voice Service Active</span>';
           
           // When audio finishes, set status back to listening
           audio.onended = () => {
@@ -1452,8 +1432,6 @@ Tum ab voice call mode mein ho. Is mode mein:
         .catch(err => {
           console.error('Error playing audio:', err);
           callScreenStatus.textContent = 'Error playing audio';
-          corsStatus.innerHTML = '<span class="api-status-indicator"></span> <span>Voice Error</span>';
-          corsStatus.style.background = '#EF4444';
           isSpeaking = false;
         });
     }
